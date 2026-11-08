@@ -1,0 +1,22 @@
+# Publishes the prompt-cards PDF as a GitHub Release asset when a tag like "2026-11" is pushed.
+# The release is created with the workflow token, so it is published by github-actions[bot].
+# GitHub counts every download of the asset: run `npm run downloads` in book_generator/ to see the counts.
+name: Publish prompt cards release
+on:
+  push:
+    tags: ["20*"]
+permissions:
+  contents: write
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Create release with the PDF attached
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG: ${{ github.ref_name }}
+        run: |
+          gh release create "$TAG" release/*.pdf \
+            --title "Copilot Prompt Cards: ${TAG} edition" \
+            --notes "Free printable Copilot prompt cards for readers of Microsoft Copilot at Work by Reid Weston. Download page: https://rw-books.github.io/copilot-at-work-bonus/"
